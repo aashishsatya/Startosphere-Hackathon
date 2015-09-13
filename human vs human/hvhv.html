@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Tic Toe</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="bootstrap.min.css" rel="stylesheet" />
+        <script src="jquery-1.11.3.min.js"></script>
+        
+        <style>
+            *{
+                box-sizing: border-box;
+            }
+            #board{
+                width:425px;
+                height:425px;
+                margin-top:100px;
+                margin-left:100px;
+            }
+            .col{
+                background-color: #ff4400;
+                width:100px;
+                display:inline-block;
+                height:100px;
+                position: relative;
+            }  
+            p{
+                position: absolute;
+                top:5px;
+                left:30px;
+                color:#fff;
+                font-size: 5em;
+                
+            }
+        </style>
+    </head>
+    
+    
+    <body>
+        <h1 style="text-align: center">Tic Toe 4 X 4 </h1>
+        <div style="float:right;padding-right:50px">
+            <h3>Player One: <span id="p1"></span></h3>
+            <h3>Player Two: <span id="p2"></span></h3>
+            <h2 id="msg"></h2>
+        </div>
+        
+        <div id="board">
+            <div class="col"></div>
+            <div class="col"></div>
+            <div class="col"></div>
+            <div class="col"></div>
+            
+            <div class="col"></div>
+            <div class="col"></div>
+            <div class="col"></div>
+            <div class="col"></div>
+            
+            <div class="col"></div>
+            <div class="col"></div>
+            <div class="col"></div>
+            <div class="col"></div>
+            
+            <div class="col"></div>
+            <div class="col"></div>
+            <div class="col"></div>
+            <div class="col"></div>
+            
+        </div>
+        
+       
+        
+        <div id="debug" style="font-size:3em">
+            
+        </div>
+        
+        <script>
+            
+            var $debug = $("#debug");
+            
+            var box = new Array(4);
+            for(var i=0;i<4;i++){
+                box[i] = new Array(4);
+            }
+            var $p1=$("#p1");
+            var $p2=$("#p2");
+            var $msg = $("#msg");
+            $p1.text("0");
+            $p2.text("0");
+            
+            $cols = $(".col");
+            
+            $cols.each(function(ind,obj){
+                var i = Math.floor(ind/4);
+                var j = ind%4; 
+//                box[i][j] = obj;
+                  $(this).attr("data-i",i);
+                  $(this).attr("data-j",j);
+            });
+            
+            //logic 
+            var nextMove = false;
+            var point1 = 0;
+            var point2 = 0;
+            var moveCount=0;
+            $cols.click(function(){
+                if($(this).attr("data-clicked")=="true"){
+                   return;
+                }
+                $(this).attr("data-clicked","true");
+                if(nextMove)
+                    $(this).append("<p>0</p>");
+                else $(this).append("<p>X</p>");
+                var i = $(this).attr("data-i");
+                var j = $(this).attr("data-j");
+                
+                box[i][j] = nextMove? 1:0;
+                
+                points = getPoints(box,i,j,nextMove? 1:0);
+                nextMove? point2+=points:point1+=points;
+                updatePoints(point1,point2);
+                moveCount++;
+                if(moveCount==16){
+                    if(point1==point2){
+                         $msg.text("Game Over!! It's a Tie!!");
+                    }else if(point1>point2){
+                         $msg.text("Game Over!! Player One Wins!");
+                    }else{
+                         $msg.text("Game Over!! Player Two Wins!");
+                    }
+                   
+                }
+                nextMove = !nextMove;
+            });
+            
+            function updatePoints(p1,p2){
+                $p1.text(p1);
+                $p2.text(p2);
+            }
+            
+            function get(box,i,j){
+                if(i<0||j<0||i>=4||j>=4){
+                    return -1;
+                }else{
+                  return box[i][j];  
+                }
+            }
+            function getPoints(box,i,j,val){
+                i = parseInt(i);
+                j = parseInt(j);
+               // console.log(i+":"+j);
+                var points = (val==get(box,i-1,j))?
+                                (val==get(box,i+1,j)? 
+                                    (1+ (val==get(box,i+2,j)? 1:0)) 
+                                     : (val==get(box,i-2,j)? 1:0))  
+                             :(val==get(box,i+1,j)&&val==get(box,i+2,j))? 1:0;
+                
+                points += (val==get(box,i,j-1))?
+                                (val==get(box,i,j+1)? 
+                                    (1+ (val==get(box,i,j+2)? 1:0)) 
+                                     : (val==get(box,i,j-2)? 1:0))  
+                             :(val==get(box,i,j+1)&&val==get(box,i,j+2))? 1:0;
+               
+                points += (val==get(box,i-1,j-1))?
+                                (val==get(box,i+1,j+1)? 
+                                    (1+ (val==get(box,i+2,j+2)? 1:0)) 
+                                     : (val==get(box,i-2,j-2)? 1:0))  
+                             :(val==get(box,i+1,j+1)&&val==get(box,i+2,j+2))? 1:0;
+                             
+                points += (val==get(box,i-1,j+1))?
+                                (val==get(box,i+1,j-1)? 
+                                    (1+ (val==get(box,i+2,j+2)? 1:0)) 
+                                     : (val==get(box,i-2,j+2)? 1:0))  
+                             :(val==get(box,i+1,j-1)&&val==get(box,i+2,j-2))? 1:0;
+                             
+                console.log(points);           
+                return points;
+            }
+            
+            
+        </script>
+            
+    </body>
+</html>
